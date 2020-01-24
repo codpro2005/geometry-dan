@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 7250891944361851268}
   - component: {fileID: 7250891944361851259}
   - component: {fileID: 7250891944361851257}
+  - component: {fileID: 6400376091219945884}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -42,7 +43,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 1, g: 0.7254902, b: 0.7254902, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -83,3 +84,18 @@ AudioListener:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 7250891944361851256}
   m_Enabled: 1
+--- !u!114 &6400376091219945884
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7250891944361851256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6cf0c8c0b3d8a8a44882805867946711, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  toFollow: {fileID: 7850074509054808756, guid: 12281875be29a4a4097f7e3ae326f1e2,
+    type: 3}
+  offset: {x: -6, y: 0}

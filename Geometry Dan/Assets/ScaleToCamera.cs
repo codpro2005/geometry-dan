@@ -4,18 +4,18 @@ using UnityEngine;
 
 public class ScaleToCamera : MonoBehaviour
 {
-	[SerializeField]
-	private GameObject camera;
+	[SerializeField] private GameObject camera;
 
 	private Transform currentTransform;
 	private GameObject cameraReference;
 	private Camera cameraReferenceCamera;
 
+
     // Awake is called before Start and should be used as the constructor
     private void Awake()
     {
 	    this.currentTransform = this.GetComponent<Transform>();
-        this.cameraReference = GameObject.Find(camera.name);
+	    this.cameraReference = GameObject.Find(camera.name);
         this.cameraReferenceCamera = this.cameraReference.GetComponent<Camera>();
     }
     // Start is called before the first frame update

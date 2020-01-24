@@ -4,8 +4,7 @@ using UnityEngine;
 
 public class ConstantVelocity : MonoBehaviour
 {
-	[SerializeField]
-	private Vector2 velocity;
+	[SerializeField] private Vector2 velocity;
 
 	private Rigidbody2D currentRigidbody2D;
 
@@ -30,5 +29,11 @@ public class ConstantVelocity : MonoBehaviour
     private void FixedUpdate()
     {
 	    this.currentRigidbody2D.position += this.velocity;
+    }
+
+    public int GetDirection()
+    {
+	    var xVelocity = this.velocity.x;
+	    return xVelocity > 0 ? 1 : xVelocity < 0 ? -1 : 0;
     }
 }

@@ -1,43 +1,63 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using UnityEngine;
 
 public class PlayerController : MonoBehaviour
 {
-    [SerializeField]
-    private Vector2 xForce;
+    [SerializeField] private Vector2 xForce;
+    [SerializeField] private GameObject jumpResetOnCollideWith;
 
-    private Rigidbody2D playerRigidbody2D;
+    private Rigidbody2D currentRigidbody2D;
+    private GameObject jumpResetOnCollideWithReference;
     private bool triggerForce;
+    private bool jumpReset;
 
     // Awake is called before Start and should be used as the constructor
     private void Awake()
     {
-        this.playerRigidbody2D = this.GetComponent<Rigidbody2D>();
+        this.currentRigidbody2D = this.GetComponent<Rigidbody2D>();
+        this.jumpResetOnCollideWithReference = GameObject.Find(this.jumpResetOnCollideWith.name);
     }
 
     // Start is called before the first frame update
-    void Start()
+    private void Start()
     {
         
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
-        if (new List<Touch>(Input.touches).Any(touch => touch.phase == TouchPhase.Began))
-        {
-            this.triggerForce = true;
-        }
+	    if (Input.touches.Any(touch => touch.phase == TouchPhase.Began))
+	    {
+		    this.triggerForce = true;
+	    }
+
     }
 
     private void FixedUpdate()
     {
-        if (this.triggerForce)
+        if (this.triggerForce && this.jumpReset)
         {
-            this.playerRigidbody2D.AddForce(this.xForce);
+            this.currentRigidbody2D.AddForce(this.xForce);
             this.triggerForce = false;
         }
+    }
+
+    private void OnCollisionEnter2D(Collision2D collision2D)
+    {
+	    var collision2DTransfromTag = collision2D.transform.tag;
+	    if (collision2DTransfromTag == this.jumpResetOnCollideWithReference.tag)
+	    {
+		    this.jumpReset = true;
+	    }
+    }
+
+    private void OnCollisionExit2D(Collision2D collision2D)
+    {
+	    var collision2DTransfromTag = collision2D.transform.tag;
+	    if (collision2DTransfromTag == this.jumpResetOnCollideWithReference.tag)
+	    {
+		    this.jumpReset = false;
+	    }
     }
 }
