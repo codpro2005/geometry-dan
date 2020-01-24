@@ -96,7 +96,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1328e625eed746f499273df034805da3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  velocity: {x: 0.05, y: 0}
+  velocity: {x: 0, y: 0}
 --- !u!114 &5187294585177930491
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -110,7 +110,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   xForce: {x: 0, y: 300}
+  enableActionOnTouch: 1
+  enableActionOnScream: 1
+  jumpThreshold: 0.3
   jumpResetOnCollideWith: {fileID: 0}
+  killOnCollideWith: {fileID: 0}
+  triggerFlyOnCollideWith: {fileID: 0}
 --- !u!61 &3078794955651969407
 BoxCollider2D:
   m_ObjectHideFlags: 0
