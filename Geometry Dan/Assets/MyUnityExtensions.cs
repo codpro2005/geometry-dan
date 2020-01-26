@@ -21,6 +21,11 @@ namespace MyUnityExtensions
 			return main.x >= toCompare.x && main.y >= toCompare.y && main.z >= toCompare.z;
 		}
 
+		public static Vector3Int ToVector3Int(this Vector3 vector3)
+		{
+			return new Vector3Int((int)vector3.x, (int)vector3.y, (int)vector3.z);
+		}
+
 		#endregion
 
 		#region Vector2
@@ -33,6 +38,11 @@ namespace MyUnityExtensions
 		public static bool BiggerOrEqualThan(this Vector2 main, Vector2 toCompare)
 		{
 			return main.x >= toCompare.x && main.y >= toCompare.y;
+		}
+
+		public static Vector2Int ToVector2Int(this Vector2 vector2)
+		{
+			return new Vector2Int((int)vector2.x, (int)vector2.y);
 		}
 
 		#endregion

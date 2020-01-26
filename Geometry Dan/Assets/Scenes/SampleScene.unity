@@ -288,11 +288,6 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
-    - target: {fileID: 4588569662944418635, guid: 12281875be29a4a4097f7e3ae326f1e2,
-        type: 3}
-      propertyPath: m_GravityScale
-      value: 5
-      objectReference: {fileID: 0}
     - target: {fileID: 5187294585177930491, guid: 12281875be29a4a4097f7e3ae326f1e2,
         type: 3}
       propertyPath: killOnCollideWith
@@ -308,6 +303,11 @@ PrefabInstance:
       propertyPath: triggerFlyOnCollideWith
       value: 
       objectReference: {fileID: 916975610}
+    - target: {fileID: 6101962444738985180, guid: 12281875be29a4a4097f7e3ae326f1e2,
+        type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 7850074509054808754, guid: 12281875be29a4a4097f7e3ae326f1e2,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -316,7 +316,7 @@ PrefabInstance:
     - target: {fileID: 7850074509054808754, guid: 12281875be29a4a4097f7e3ae326f1e2,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: -0.485
       objectReference: {fileID: 0}
     - target: {fileID: 7850074509054808754, guid: 12281875be29a4a4097f7e3ae326f1e2,
         type: 3}

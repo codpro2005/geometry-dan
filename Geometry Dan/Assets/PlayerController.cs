@@ -3,7 +3,7 @@ using System.Linq;
 using MyProperties;
 using MyUnityExtensions;
 using UnityEngine;
- 
+
 public enum State
 {
 	Run,
@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private GameObject triggerFlyOnCollideWith;
 	[SerializeField] private bool resetVelocityOnStateSwitch;
 
+	private Transform currentTransform;
 	private Rigidbody2D currentRigidbody2D;
 	private State state;
 	private GameObject jumpResetOnCollideWithReference;
@@ -44,6 +45,7 @@ public class PlayerController : MonoBehaviour
 	// Awake is called before Start and should be used as the constructor
 	private void Awake()
 	{
+		this.currentTransform = this.GetComponent<Transform>();
 		this.currentRigidbody2D = this.GetComponent<Rigidbody2D>();
 		this.jumpResetOnCollideWithReference = GameObject.Find(this.jumpResetOnCollideWith.name);
 		this.killOnCollideWithReference = GameObject.Find(this.killOnCollideWith.name);
@@ -68,8 +70,8 @@ public class PlayerController : MonoBehaviour
 		this.SetTilt();
 
 		var touchThresholdReached = this.enableActionOnTouch && Input.touches.Any(touch =>
-			                 touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Stationary ||
-			                 touch.phase == TouchPhase.Moved);
+							 touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Stationary ||
+							 touch.phase == TouchPhase.Moved);
 		;
 		var volumeThresholdReached = this.enableActionOnVolume && this.volume >= this.singleActionVolumeThreshold;
 		var tiltThresholdReached = this.enableActionOnTilt && this.tilt.BiggerOrEqualThan(this.singleActionTiltThreshold);
@@ -77,7 +79,7 @@ public class PlayerController : MonoBehaviour
 		{
 			case State.Run:
 				if (this.touchesGround && this.currentRigidbody2D.velocity.y <= 0 &&
-				    (touchThresholdReached || volumeThresholdReached || tiltThresholdReached))
+					(touchThresholdReached || volumeThresholdReached || tiltThresholdReached))
 				{
 					this.jump = true;
 					this.force = this.jumpForce;
@@ -118,6 +120,7 @@ public class PlayerController : MonoBehaviour
 		void AddForce() => this.currentRigidbody2D.AddForce(this.force);
 		PlayerController.ActionOnConditionForFixedUpdate(ref this.jump, AddForce);
 		PlayerController.ActionOnConditionForFixedUpdate(ref this.fly, AddForce);
+		this.RespawnOnFrontalTouch();
 	}
 
 	private void OnCollisionEnter2D(Collision2D collision2D)
@@ -126,11 +129,11 @@ public class PlayerController : MonoBehaviour
 		if (collision2DTransfromTag == this.jumpResetOnCollideWithReference.tag)
 		{
 			this.touchesGround = true;
-		} else
+		}
+		else
 		if (collision2DTransfromTag == this.killOnCollideWithReference.tag)
 		{
-			Handheld.Vibrate();
-			Handler.ReloadScene();
+			PlayerController.Respawn();
 		}
 	}
 
@@ -138,7 +141,6 @@ public class PlayerController : MonoBehaviour
 	{
 		if (collider2D.transform.tag != this.triggerFlyOnCollideWithReference.tag) return;
 		this.state = this.state == State.Fly ? State.Run : State.Fly;
-		Debug.Log(this.state);
 		if (resetVelocityOnStateSwitch)
 		{
 			this.currentRigidbody2D.velocity = Vector2.zero;
@@ -161,6 +163,27 @@ public class PlayerController : MonoBehaviour
 		condition = false;
 	}
 
+	private void RespawnOnFrontalTouch()
+	{
+		var currentTransformPosition = (Vector2)this.currentTransform.position;
+		var currentTransformLocalScale = (Vector2)this.transform.localScale;
+		var currentTransformRotationZ = this.currentTransform.rotation.z;
+
+		var isGlitchingThrough = Physics2D
+			.OverlapBoxAll(currentTransformPosition, currentTransformLocalScale - new Vector2(0.05f, 0.05f),
+			currentTransformRotationZ)
+			.Any(collider => collider.name != this.currentTransform.name && !collider.isTrigger);
+		var touchesRight = Physics2D
+			.OverlapBoxAll(new Vector2(currentTransformPosition.x + currentTransformLocalScale.x / 2, currentTransformPosition.y), new Vector2(0, currentTransformLocalScale.y - 0.1f),
+				currentTransformRotationZ)
+			.Any(collider =>
+				collider.name != this.currentTransform.name && !collider.isTrigger);
+		if (!isGlitchingThrough && touchesRight)
+		{
+			PlayerController.Respawn();
+		}
+	}
+
 	private void SetVolume()
 	{
 		var currentMicPosition = Microphone.GetPosition(null);
@@ -175,6 +198,12 @@ public class PlayerController : MonoBehaviour
 	{
 		var acceleration = Input.acceleration;
 		this.tilt = new Vector2(acceleration.x > 0 ? acceleration.x : 0, acceleration.y > 0 ? acceleration.y : 0);
+	}
+
+	private static void Respawn()
+	{
+		Handheld.Vibrate();
+		Handler.ReloadScene();
 	}
 
 	public State GetState()
