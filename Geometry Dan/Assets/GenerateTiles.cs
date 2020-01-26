@@ -1,5 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using MyUnityExtensions;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -15,8 +16,8 @@ public class GenerateTiles : MonoBehaviour
 	private Transform currentTransform;
 	private Tilemap currentTilemap;
 	private GameObject loadAroundReference;
-	private Vector2Int latestLoadAroundPositionCell;
-	private List<Vector3Int> generatedTilesPositionCell;
+	private List<Vector3Int> generatedTilesCellPosition;
+	private int latestLoadAroundCellPositionX;
 
 	// Awake is called before Start and should be used as the constructor
 	private void Awake()
@@ -24,6 +25,7 @@ public class GenerateTiles : MonoBehaviour
 		this.currentTransform = this.GetComponent<Transform>();
 		this.currentTilemap = this.GetComponent<Tilemap>();
 		this.loadAroundReference = GameObject.Find(loadAround.name);
+		this.generatedTilesCellPosition = new List<Vector3Int>();
 	}
 
 	// Start is called before the first frame update
@@ -36,23 +38,43 @@ public class GenerateTiles : MonoBehaviour
 	// Update is called once per frame
 	private void Update()
 	{
-		//var loadAroundPositionCell = ((Vector2)this.loadAroundReference.transform.position).ToVector2Int();
-		//if (loadAroundPositionCell == this.latestLoadAroundPositionCell) return;
-		//this.latestLoadAroundPositionCell = loadAroundPositionCell;
-		//var lazyLoadPositionGroundLimit = new Vector2Int(loadAroundPositionCell.x + this.lazyLoadDistance.x, -this.groundHeigth);
-		//var newGeneratedTilesPositionCell = new List<Vector3Int>();
+		var loadAroundCellPositionX = (int)this.loadAroundReference.transform.position.x;
+		if (loadAroundCellPositionX == this.latestLoadAroundCellPositionX) return;
+		this.latestLoadAroundCellPositionX = loadAroundCellPositionX;
+		var newGeneratedTilesCellPosition = new List<Vector3Int>();
+		this.SetAllActiveTiles(loadAroundCellPositionX, newGeneratedTilesCellPosition);
+		this.DeleteAllInactiveTiles(newGeneratedTilesCellPosition);
+		this.generatedTilesCellPosition = newGeneratedTilesCellPosition;
+	}
 
-		//for (var tileIndexX = -lazyLoadPositionGroundLimit.x; tileIndexX <= lazyLoadPositionGroundLimit.x; tileIndexX++)
-		//{
-		//	for (var tileIndexY = 0; tileIndexY >= lazyLoadPositionGroundLimit.y; tileIndexY++)
-		//	{
-		//		var generateTilePositionCell = new Vector3Int(tileIndexX, tileIndexY, this.currentTransform.position.ToVector3Int().z);
-		//		newGeneratedTilesPositionCell.Add(generateTilePositionCell);
-		//		if (this.generatedTilesPositionCell.Contains(generateTilePositionCell)) continue;
-		//		this.currentTilemap.SetTile(generateTilePositionCell, this.tile);
-		//	}
-		//}
+	private void SetAllActiveTiles(int startingPointX, ICollection<Vector3Int> tileCollection)
+	{
+		for (var tileIndexX = startingPointX - lazyLoadDistance.x; tileIndexX <= startingPointX + this.lazyLoadDistance.x; tileIndexX++)
+		{
+			for (var tileIndexY = this.groundHeigth; tileIndexY >= this.groundHeigth - this.lazyLoadDistance.y; tileIndexY--)
+			{
+				this.SetSingleTile(new Vector3Int(tileIndexX, tileIndexY, this.currentTransform.position.ToVector3Int().z), tileCollection);
+			}
 
-		//this.generatedTilesPositionCell = newGeneratedTilesPositionCell;
+			for (var tileIndexY = this.skyHeigth; tileIndexY <= this.skyHeigth + this.lazyLoadDistance.y; tileIndexY++)
+			{
+				this.SetSingleTile(new Vector3Int(tileIndexX, tileIndexY, this.currentTransform.position.ToVector3Int().z), tileCollection);
+			}
+		}
+	}
+
+	private void SetSingleTile(Vector3Int generateTileCellPosition, ICollection<Vector3Int> extendCollectionByNewTile = null)
+	{
+		extendCollectionByNewTile?.Add(generateTileCellPosition);
+		if (this.generatedTilesCellPosition.Contains(generateTileCellPosition)) return;
+		this.currentTilemap.SetTile(generateTileCellPosition, this.tile);
+	}
+
+	private void DeleteAllInactiveTiles(ICollection<Vector3Int> tileCollection)
+	{
+		foreach (var toDeleteTileCellPosition in this.generatedTilesCellPosition.Where(generatedTileCellPosition => !tileCollection.Contains(generatedTileCellPosition)))
+		{
+			this.currentTilemap.SetTile(toDeleteTileCellPosition, null);
+		}
 	}
 }
