@@ -1,43 +1,33 @@
 ﻿using System;
-using MyBox;
-using System.Collections.Generic;
 using System.Linq;
+using MyProperties;
+using MyUnityExtensions;
 using UnityEngine;
-
+ 
 public enum State
 {
 	Run,
 	Fly
 }
 
-//public class Active
-//{
-//    public bool isActive;
-//}
-
-//public class Active<T>
-//{
-//    public bool isActive;
-//    public T Value;
-//}
-
 public class PlayerController : MonoBehaviour
 {
 	[SerializeField] private Vector2 jumpForce;
 	[SerializeField] private Vector2 flyForce;
 	[SerializeField] private bool enableActionOnTouch;
+	[SerializeField] [ConditionalField("enableActionOnTouch")] private float touchMultiplier;
 	[SerializeField] private bool enableActionOnVolume;
-	[SerializeField] [ConditionalField("enableActionOnVolume")] private float jumpVolumeThreshold;
+	[SerializeField] [ConditionalField("enableActionOnVolume")] private float singleActionVolumeThreshold;
 	[SerializeField] [ConditionalField("enableActionOnVolume")] private float volumeMultiplier;
 	[SerializeField] private bool enableActionOnTilt;
-	[SerializeField] [ConditionalField("enableActionOnTilt")] private float jumpTiltThreshold;
+	[SerializeField] [ConditionalField("enableActionOnTilt")] private Vector2 singleActionTiltThreshold;
 	[SerializeField] [ConditionalField("enableActionOnTilt")] private float tiltMultiplier;
 	[SerializeField] private GameObject jumpResetOnCollideWith;
 	[SerializeField] private GameObject killOnCollideWith;
 	[SerializeField] private GameObject triggerFlyOnCollideWith;
+	[SerializeField] private bool resetVelocityOnStateSwitch;
 
 	private Rigidbody2D currentRigidbody2D;
-
 	private State state;
 	private GameObject jumpResetOnCollideWithReference;
 	private GameObject killOnCollideWithReference;
@@ -48,8 +38,8 @@ public class PlayerController : MonoBehaviour
 	private bool fly;
 	private Vector2 force;
 	private float volume;
+	private Vector2 tilt;
 	private bool touchesGround;
-	private Handler handler;
 
 	// Awake is called before Start and should be used as the constructor
 	private void Awake()
@@ -58,7 +48,6 @@ public class PlayerController : MonoBehaviour
 		this.jumpResetOnCollideWithReference = GameObject.Find(this.jumpResetOnCollideWith.name);
 		this.killOnCollideWithReference = GameObject.Find(this.killOnCollideWith.name);
 		this.triggerFlyOnCollideWithReference = GameObject.Find(this.triggerFlyOnCollideWith.name);
-		this.handler = GameObject.Find("Handler").GetComponent<Handler>();
 		if (Microphone.devices.Length > 0)
 		{
 			this.microphoneExists = true;
@@ -75,24 +64,20 @@ public class PlayerController : MonoBehaviour
 	// Update is called once per frame
 	private void Update()
 	{
-		var currentMicPosition = Microphone.GetPosition(null);
-		if (microphoneExists && currentMicPosition > 0)
-		{
-			const int dec = 128;
-			var waveData = new float[dec];
-			this.microphoneInput.GetData(waveData, currentMicPosition - (dec + 1));
-			this.volume = Mathf.Sqrt(Mathf.Sqrt(waveData.Select(single => Mathf.Pow(single, 2)).Max()));
-		}
+		this.SetVolume();
+		this.SetTilt();
 
-		var validTouch = this.enableActionOnTouch && Input.touches.Any(touch =>
+		var touchThresholdReached = this.enableActionOnTouch && Input.touches.Any(touch =>
 			                 touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Stationary ||
 			                 touch.phase == TouchPhase.Moved);
-		var validVolume = this.enableActionOnVolume;
+		;
+		var volumeThresholdReached = this.enableActionOnVolume && this.volume >= this.singleActionVolumeThreshold;
+		var tiltThresholdReached = this.enableActionOnTilt && this.tilt.BiggerOrEqualThan(this.singleActionTiltThreshold);
 		switch (this.state)
 		{
 			case State.Run:
 				if (this.touchesGround && this.currentRigidbody2D.velocity.y <= 0 &&
-				    (validTouch || validVolume && this.volume > this.jumpVolumeThreshold))
+				    (touchThresholdReached || volumeThresholdReached || tiltThresholdReached))
 				{
 					this.jump = true;
 					this.force = this.jumpForce;
@@ -100,18 +85,23 @@ public class PlayerController : MonoBehaviour
 
 				break;
 			case State.Fly:
-				if (validTouch || validVolume)
+				if (touchThresholdReached || this.enableActionOnVolume || this.enableActionOnTilt)
 				{
 					this.fly = true;
 					var totalForce = Vector2.zero;
-					if (validTouch)
+					if (touchThresholdReached)
 					{
-						totalForce += this.flyForce;
+						totalForce += this.flyForce * this.touchMultiplier;
 					}
 
-					if (validVolume)
+					if (this.enableActionOnVolume)
 					{
-						totalForce += this.flyForce * this.volume;
+						totalForce += this.flyForce * this.volume * this.volumeMultiplier;
+					}
+
+					if (this.enableActionOnTilt)
+					{
+						totalForce += this.flyForce * this.tilt * this.tiltMultiplier;
 					}
 
 					this.force = totalForce;
@@ -130,13 +120,6 @@ public class PlayerController : MonoBehaviour
 		PlayerController.ActionOnConditionForFixedUpdate(ref this.fly, AddForce);
 	}
 
-	private static void ActionOnConditionForFixedUpdate(ref bool condition, Action action)
-	{
-		if (!condition) return;
-		action();
-		condition = false;
-	}
-
 	private void OnCollisionEnter2D(Collision2D collision2D)
 	{
 		var collision2DTransfromTag = collision2D.transform.tag;
@@ -146,16 +129,19 @@ public class PlayerController : MonoBehaviour
 		} else
 		if (collision2DTransfromTag == this.killOnCollideWithReference.tag)
 		{
-			this.handler.ReloadScene();
+			Handheld.Vibrate();
+			Handler.ReloadScene();
 		}
 	}
 
 	private void OnTriggerEnter2D(Collider2D collider2D)
 	{
-		var collider2DTransformTag = collider2D.transform.tag;
-		if (collider2DTransformTag == this.triggerFlyOnCollideWithReference.tag)
+		if (collider2D.transform.tag != this.triggerFlyOnCollideWithReference.tag) return;
+		this.state = this.state == State.Fly ? State.Run : State.Fly;
+		Debug.Log(this.state);
+		if (resetVelocityOnStateSwitch)
 		{
-			this.state = this.state == State.Fly ? State.Run : State.Fly;
+			this.currentRigidbody2D.velocity = Vector2.zero;
 		}
 	}
 
@@ -166,5 +152,33 @@ public class PlayerController : MonoBehaviour
 		{
 			this.touchesGround = false;
 		}
+	}
+
+	private static void ActionOnConditionForFixedUpdate(ref bool condition, Action action)
+	{
+		if (!condition) return;
+		action();
+		condition = false;
+	}
+
+	private void SetVolume()
+	{
+		var currentMicPosition = Microphone.GetPosition(null);
+		if (!microphoneExists || currentMicPosition <= 0) return;
+		const int dec = 128;
+		var waveData = new float[dec];
+		this.microphoneInput.GetData(waveData, currentMicPosition - (dec + 1));
+		this.volume = Mathf.Sqrt(Mathf.Sqrt(waveData.Select(single => Mathf.Pow(single, 2)).Max()));
+	}
+
+	private void SetTilt()
+	{
+		var acceleration = Input.acceleration;
+		this.tilt = new Vector2(acceleration.x > 0 ? acceleration.x : 0, acceleration.y > 0 ? acceleration.y : 0);
+	}
+
+	public State GetState()
+	{
+		return this.state;
 	}
 }

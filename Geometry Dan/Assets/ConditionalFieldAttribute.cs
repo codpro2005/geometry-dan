@@ -6,8 +6,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using System.Collections.ObjectModel;
 using System.Reflection;
+using MyProperties;
 
-namespace MyBox
+namespace MyProperties
 {
     /// <summary>
     /// Conditionally Show/Hide field in inspector, based on some other field value 

@@ -5,19 +5,25 @@ using UnityEngine.SceneManagement;
 
 public class Handler : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
+	// Awake is called before Start and should be used as the constructor
+	private void Awake()
+	{
 
-    }
+	}
 
-    // Update is called once per frame
-    void Update()
-    {
+	// Start is called before the first frame update
+	private void Start()
+	{
 
-    }
+	}
 
-    public void ReloadScene()
+	// Update is called once per frame
+	private void Update()
+	{
+
+	}
+
+    public static void ReloadScene()
     {
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
     }
