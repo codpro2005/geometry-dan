@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7250891944361851259}
   - component: {fileID: 7250891944361851257}
   - component: {fileID: 6066974595166372813}
+  - component: {fileID: 367263554975445743}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -103,3 +104,25 @@ MonoBehaviour:
   smoothSpeed: 0.25
   runOffset: {x: -4, y: -2}
   flyOffset: {x: -4, y: 0}
+--- !u!114 &367263554975445743
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7250891944361851256}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cb560e181cac1e14c9c719fa08755203, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  progressionBar:
+    gameObject: {fileID: 3019291764068394248, guid: 43b51680a3ed8dd4b93fa93bf2f35bcb,
+      type: 3}
+    xDeterminedBy: {fileID: 7850074509054808756, guid: 12281875be29a4a4097f7e3ae326f1e2,
+      type: 3}
+    endXDeterminedby: {fileID: 4147084970809281682, guid: e42f1c9cfa54cea45a144ff828c476c1,
+      type: 3}
+    offset: {x: 0, y: 4.5}
+    inactive: {r: 0.5764706, g: 0.5764706, b: 0.5764706, a: 1}
+    active: {r: 0.45664597, g: 0.8867924, b: 0.14640439, a: 1}

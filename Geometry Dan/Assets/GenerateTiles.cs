@@ -31,8 +31,7 @@ public class GenerateTiles : MonoBehaviour
 	// Start is called before the first frame update
 	private void Start()
 	{
-		this.currentTilemap.SetTile(Vector3Int.zero, this.tile);
-		this.currentTilemap.SetTile(Vector3Int.up, this.tile);
+
 	}
 
 	// Update is called once per frame

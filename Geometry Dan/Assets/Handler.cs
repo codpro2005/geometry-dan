@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class Handler : MonoBehaviour
 {
+	public static int Reverse => -1;
 	// Awake is called before Start and should be used as the constructor
 	private void Awake()
 	{
@@ -25,6 +26,19 @@ public class Handler : MonoBehaviour
 
     public static void ReloadScene()
     {
+	    Physics2D.gravity = new Vector2(0, -9.81f);
         SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
+
+    public static void ReverseGravity()
+    {
+	    var gravity = Physics2D.gravity;
+		Physics2D.gravity = new Vector2(gravity.x, -gravity.y);
+    }
+
+    public static int GetGravityMultiplier()
+    {
+	    var gravityY = Physics2D.gravity.y;
+	    return gravityY < 0 ? 1 : gravityY > 0 ? -1 : 0;
     }
 }

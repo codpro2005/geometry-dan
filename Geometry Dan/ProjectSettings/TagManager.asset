@@ -7,6 +7,7 @@ TagManager:
   - Ground
   - Killer
   - TriggerFly
+  - TriggerReverseGravity
   layers:
   - Default
   - TransparentFX
@@ -16,8 +17,8 @@ TagManager:
   - UI
   - 
   - 
-  - 
-  - 
+  - Trigger
+  - Background
   - 
   - 
   - 
@@ -46,4 +47,10 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Trigger
+    uniqueID: 797810939
+    locked: 0
+  - name: UI
+    uniqueID: 425399817
     locked: 0

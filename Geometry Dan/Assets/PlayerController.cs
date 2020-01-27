@@ -25,14 +25,17 @@ public class PlayerController : MonoBehaviour
 	[SerializeField] private GameObject jumpResetOnCollideWith;
 	[SerializeField] private GameObject killOnCollideWith;
 	[SerializeField] private GameObject triggerFlyOnCollideWith;
-	[SerializeField] private bool resetVelocityOnStateSwitch;
+	[SerializeField] private GameObject triggerReverseGravityOnCollideWith;
+	[SerializeField] private bool resetVelocityOnSwitch;
 
 	private Transform currentTransform;
 	private Rigidbody2D currentRigidbody2D;
+	private ConstantVelocity currentConstantVelocity;
 	private State state;
 	private GameObject jumpResetOnCollideWithReference;
 	private GameObject killOnCollideWithReference;
 	private GameObject triggerFlyOnCollideWithReference;
+	private GameObject triggerReverseGravityOnCollideWithReference;
 	private AudioClip microphoneInput;
 	private bool microphoneExists;
 	private bool jump;
@@ -41,15 +44,20 @@ public class PlayerController : MonoBehaviour
 	private float volume;
 	private Vector2 tilt;
 	private bool touchesGround;
+	private float gravityStrength;
 
 	// Awake is called before Start and should be used as the constructor
 	private void Awake()
 	{
 		this.currentTransform = this.GetComponent<Transform>();
 		this.currentRigidbody2D = this.GetComponent<Rigidbody2D>();
+		this.currentConstantVelocity = this.GetComponent<ConstantVelocity>();
 		this.jumpResetOnCollideWithReference = GameObject.Find(this.jumpResetOnCollideWith.name);
 		this.killOnCollideWithReference = GameObject.Find(this.killOnCollideWith.name);
 		this.triggerFlyOnCollideWithReference = GameObject.Find(this.triggerFlyOnCollideWith.name);
+		this.triggerReverseGravityOnCollideWithReference = GameObject.Find(this.triggerReverseGravityOnCollideWith.name);
+		var gravityScale = this.currentRigidbody2D.gravityScale;
+		this.gravityStrength = gravityScale > 0 ? 1 : gravityScale < 0 ? -1 : 0;
 		if (Microphone.devices.Length > 0)
 		{
 			this.microphoneExists = true;
@@ -78,7 +86,7 @@ public class PlayerController : MonoBehaviour
 		switch (this.state)
 		{
 			case State.Run:
-				if (this.touchesGround && this.currentRigidbody2D.velocity.y <= 0 &&
+				if (this.touchesGround && this.currentRigidbody2D.velocity.y * this.gravityStrength <= 0 &&
 					(touchThresholdReached || volumeThresholdReached || tiltThresholdReached))
 				{
 					this.jump = true;
@@ -117,9 +125,10 @@ public class PlayerController : MonoBehaviour
 
 	private void FixedUpdate()
 	{
-		void AddForce() => this.currentRigidbody2D.AddForce(this.force);
-		PlayerController.ActionOnConditionForFixedUpdate(ref this.jump, AddForce);
-		PlayerController.ActionOnConditionForFixedUpdate(ref this.fly, AddForce);
+		void AddForce() => this.currentRigidbody2D.AddForce(new Vector2(this.force.x, this.force.y * this.gravityStrength));
+		PlayerController.ActionOnCondition(ref this.jump, AddForce);
+		PlayerController.ActionOnCondition(ref this.fly, AddForce);
+		this.force = Vector2.zero;
 		this.RespawnOnFrontalTouch();
 	}
 
@@ -139,11 +148,24 @@ public class PlayerController : MonoBehaviour
 
 	private void OnTriggerEnter2D(Collider2D collider2D)
 	{
-		if (collider2D.transform.tag != this.triggerFlyOnCollideWithReference.tag) return;
-		this.state = this.state == State.Fly ? State.Run : State.Fly;
-		if (resetVelocityOnStateSwitch)
+		var collider2DTransformTag = collider2D.transform.tag;
+		var tagIsTriggerFly = collider2DTransformTag == this.triggerFlyOnCollideWithReference.tag;
+		var tagisReverseGravity = collider2DTransformTag == this.triggerReverseGravityOnCollideWithReference.tag;
+		if (tagIsTriggerFly || tagisReverseGravity)
 		{
-			this.currentRigidbody2D.velocity = Vector2.zero;
+			if (tagIsTriggerFly)
+			{
+				this.state = this.state == State.Fly ? State.Run : State.Fly;
+			} else
+			if (tagisReverseGravity)
+			{
+				this.currentRigidbody2D.gravityScale *= Handler.Reverse;
+				this.gravityStrength *= Handler.Reverse;
+			}
+			if (resetVelocityOnSwitch)
+			{
+				this.currentRigidbody2D.velocity = Vector2.zero;
+			}
 		}
 	}
 
@@ -156,7 +178,7 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	private static void ActionOnConditionForFixedUpdate(ref bool condition, Action action)
+	private static void ActionOnCondition(ref bool condition, Action action)
 	{
 		if (!condition) return;
 		action();
@@ -168,13 +190,14 @@ public class PlayerController : MonoBehaviour
 		var currentTransformPosition = (Vector2)this.currentTransform.position;
 		var currentTransformLocalScale = (Vector2)this.transform.localScale;
 		var currentTransformRotationZ = this.currentTransform.rotation.z;
+		var localScaleOffset = -new Vector2(0.1f, 0.1f);
 
 		var isGlitchingThrough = Physics2D
-			.OverlapBoxAll(currentTransformPosition, currentTransformLocalScale - new Vector2(0.05f, 0.05f),
+			.OverlapBoxAll(currentTransformPosition, currentTransformLocalScale + localScaleOffset,
 			currentTransformRotationZ)
 			.Any(collider => collider.name != this.currentTransform.name && !collider.isTrigger);
 		var touchesRight = Physics2D
-			.OverlapBoxAll(new Vector2(currentTransformPosition.x + currentTransformLocalScale.x / 2, currentTransformPosition.y), new Vector2(0, currentTransformLocalScale.y - 0.1f),
+			.OverlapBoxAll(new Vector2(currentTransformPosition.x + (currentTransformLocalScale.x / 2 + 0.01f) * this.currentConstantVelocity.GetDirection(), currentTransformPosition.y), new Vector2(0, currentTransformLocalScale.y + localScaleOffset.y),
 				currentTransformRotationZ)
 			.Any(collider =>
 				collider.name != this.currentTransform.name && !collider.isTrigger);
