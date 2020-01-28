@@ -190,7 +190,7 @@ public class PlayerController : MonoBehaviour
 		var currentTransformPosition = (Vector2)this.currentTransform.position;
 		var currentTransformLocalScale = (Vector2)this.transform.localScale;
 		var currentTransformRotationZ = this.currentTransform.rotation.z;
-		var localScaleOffset = -new Vector2(0.1f, 0.1f);
+		var localScaleOffset = -new Vector2(0.15f, 0.15f);
 
 		var isGlitchingThrough = Physics2D
 			.OverlapBoxAll(currentTransformPosition, currentTransformLocalScale + localScaleOffset,
@@ -232,5 +232,10 @@ public class PlayerController : MonoBehaviour
 	public State GetState()
 	{
 		return this.state;
+	}
+
+	public bool TouchesGround()
+	{
+		return this.touchesGround;
 	}
 }

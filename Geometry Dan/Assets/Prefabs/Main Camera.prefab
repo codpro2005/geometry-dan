@@ -121,7 +121,7 @@ MonoBehaviour:
       type: 3}
     xDeterminedBy: {fileID: 7850074509054808756, guid: 12281875be29a4a4097f7e3ae326f1e2,
       type: 3}
-    endXDeterminedby: {fileID: 4147084970809281682, guid: e42f1c9cfa54cea45a144ff828c476c1,
+    endXDeterminedby: {fileID: 6773539324570648226, guid: 3e5a1985a7d93264b9d55d2ab7ec69fd,
       type: 3}
     offset: {x: 0, y: 4.5}
     inactive: {r: 0.5764706, g: 0.5764706, b: 0.5764706, a: 1}

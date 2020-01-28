@@ -6,6 +6,7 @@ using UnityEngine.SceneManagement;
 public class Handler : MonoBehaviour
 {
 	public static int Reverse => -1;
+
 	// Awake is called before Start and should be used as the constructor
 	private void Awake()
 	{

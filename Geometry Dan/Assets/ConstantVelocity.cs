@@ -29,9 +29,12 @@ public class ConstantVelocity : MonoBehaviour
     private void FixedUpdate()
     {
 	    this.currentRigidbody2D.position += this.velocity;
-    }
+	    //var velocityGet = this.currentRigidbody2D.velocity;
+	    //velocityGet.x = this.velocity.x;
+	    //this.currentRigidbody2D.velocity = velocityGet;
+	}
 
-    public int GetDirection()
+	public int GetDirection()
     {
 	    var xVelocity = this.velocity.x;
 	    return xVelocity > 0 ? 1 : xVelocity < 0 ? -1 : 0;
