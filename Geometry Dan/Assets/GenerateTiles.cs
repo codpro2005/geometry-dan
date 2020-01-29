@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using MyProperties;
 using MyUnityExtensions;
 using UnityEngine;
 using UnityEngine.Tilemaps;
@@ -8,10 +9,12 @@ using UnityEngine.Tilemaps;
 public class GenerateTiles : MonoBehaviour
 {
 	[SerializeField] private GameObject loadAround;
+	[SerializeField] private bool loadGround;
+	[SerializeField] [ConditionalField("loadGround")] private int groundHeigth;
+	[SerializeField] private bool loadSky;
+	[SerializeField] [ConditionalField("loadSky")] private int skyHeigth;
 	[SerializeField] private Tile tile;
 	[SerializeField] private Vector2Int lazyLoadDistance;
-	[SerializeField] private int groundHeigth;
-	[SerializeField] private int skyHeigth;
 
 	private Transform currentTransform;
 	private Tilemap currentTilemap;
@@ -50,14 +53,20 @@ public class GenerateTiles : MonoBehaviour
 	{
 		for (var tileIndexX = startingPointX - lazyLoadDistance.x; tileIndexX <= startingPointX + this.lazyLoadDistance.x; tileIndexX++)
 		{
-			for (var tileIndexY = this.groundHeigth; tileIndexY >= this.groundHeigth - this.lazyLoadDistance.y; tileIndexY--)
+			if (loadGround)
 			{
-				this.SetSingleTile(new Vector3Int(tileIndexX, tileIndexY, this.currentTransform.position.ToVector3Int().z), tileCollection);
+				for (var tileIndexY = this.groundHeigth; tileIndexY >= this.groundHeigth - this.lazyLoadDistance.y; tileIndexY--)
+				{
+					this.SetSingleTile(new Vector3Int(tileIndexX, tileIndexY, this.currentTransform.position.ToVector3Int().z), tileCollection);
+				}
 			}
 
-			for (var tileIndexY = this.skyHeigth; tileIndexY <= this.skyHeigth + this.lazyLoadDistance.y; tileIndexY++)
+			if (loadSky)
 			{
-				this.SetSingleTile(new Vector3Int(tileIndexX, tileIndexY, this.currentTransform.position.ToVector3Int().z), tileCollection);
+				for (var tileIndexY = this.skyHeigth; tileIndexY <= this.skyHeigth + this.lazyLoadDistance.y; tileIndexY++)
+				{
+					this.SetSingleTile(new Vector3Int(tileIndexX, tileIndexY, this.currentTransform.position.ToVector3Int().z), tileCollection);
+				}
 			}
 		}
 	}

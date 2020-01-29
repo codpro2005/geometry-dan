@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 6582050050463858517}
   - component: {fileID: 6582050050463858518}
   - component: {fileID: 6582050050463858519}
+  - component: {fileID: 1169710045251899320}
   m_Layer: 0
   m_Name: Killer
   m_TagString: Killer
@@ -191,3 +192,23 @@ TilemapCollider2D:
   m_Offset: {x: 0, y: 0}
   m_MaximumTileChangeCount: 1000
   m_ExtrusionFactor: 0.00001
+--- !u!114 &1169710045251899320
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6582050050463858513}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d3f690c2bccb2a942a221a7a8f010b88, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  loadAround: {fileID: 4264906358881374543, guid: 12281875be29a4a4097f7e3ae326f1e2,
+    type: 3}
+  loadGround: 0
+  groundHeigth: 0
+  loadSky: 1
+  skyHeigth: 15
+  tile: {fileID: 11400000, guid: 6626ae0171c53b845bfdb5a7ab679797, type: 2}
+  lazyLoadDistance: {x: 15, y: 10}
