@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
+using TMPro;
 using UnityEngine;
 
 [Serializable]
@@ -9,6 +11,7 @@ class ProgressionBar
 	public GameObject gameObject;
 	public GameObject xDeterminedBy;
 	public GameObject endXDeterminedby;
+	public GameObject valueToModify;
 	public Vector2 offset;
 	public Color inactive;
 	public Color active;
@@ -20,6 +23,7 @@ public class UI : MonoBehaviour
 
 	private Transform currentTransform;
 
+	private GameObject valueToModifyReference;
 	private Transform xDeterminedByReferenceTransform;
 	private float startX;
 	private float endX;
@@ -34,31 +38,22 @@ public class UI : MonoBehaviour
 	{
 		this.currentTransform = this.GetComponent<Transform>();
 
+		this.valueToModifyReference = GameObject.Find(this.progressionBar.valueToModify.transform.name);
 		this.xDeterminedByReferenceTransform = GameObject.Find(this.progressionBar.xDeterminedBy.transform.name).transform;
 		this.startX = this.xDeterminedByReferenceTransform.position.x;
 		this.endX = GameObject.Find(this.progressionBar.endXDeterminedby.transform.name).GetComponent<SceneHandler>()
 			.GetFinishLineX();
-
-		var progressionBarObject = this.progressionBar.gameObject;
-		var progressionBarPosition = (Vector2)currentTransform.position + this.progressionBar.offset;
-
-		this.inactiveProgression =
-			UI.CreateUiGameObject(progressionBarObject, progressionBarPosition, Quaternion.identity);
-		var inactiveProgressionSpriteRenderer = this.inactiveProgression.GetComponent<SpriteRenderer>();
-		inactiveProgressionSpriteRenderer.color = this.progressionBar.inactive;
-		inactiveProgressionSpriteRenderer.sortingOrder = 0;
-
-		this.activeProgression =
-			UI.CreateUiGameObject(progressionBarObject, progressionBarPosition, Quaternion.identity);
-		var activeProgressionSpriteRenderer = this.activeProgression.GetComponent<SpriteRenderer>();
-		activeProgressionSpriteRenderer.color = this.progressionBar.active;
-		activeProgressionSpriteRenderer.sortingOrder = inactiveProgressionSpriteRenderer.sortingOrder + 1;
 	}
 
 	// Start is called before the first frame update
 	private void Start()
 	{
+		var progressionBarObject = this.progressionBar.gameObject;
+		var progressionBarPosition = (Vector2)currentTransform.position + this.progressionBar.offset;
+		var identity = Quaternion.identity;
 
+		UI.CreateProgressionGameObject(out this.inactiveProgression, progressionBarObject, progressionBarPosition, identity, this.progressionBar.inactive, 0);
+		UI.CreateProgressionGameObject(out this.activeProgression, progressionBarObject, progressionBarPosition, identity, this.progressionBar.active, inactiveProgression.GetComponent<SpriteRenderer>().sortingOrder + 1);
 	}
 
 	// Update is called once per frame
@@ -76,6 +71,12 @@ public class UI : MonoBehaviour
 		var activeProgressionTransform = this.activeProgression.transform;
 		activeProgressionTransform.position = new Vector2(inactiveProgressionBarPosition.x - (inactiveProgressionBarLocalScaleX - activeProgressionTransform.localScale.x) / 2, inactiveProgressionBarPosition.y);
 		activeProgressionTransform.localScale = new Vector2(inactiveProgressionBarLocalScaleX * this.progression, activeProgressionTransform.localScale.y);
+
+		var valueToModifyTmpUgui = this.valueToModifyReference.GetComponent<TextMeshProUGUI>();
+		if (valueToModifyTmpUgui.enabled)
+		{
+			this.valueToModifyReference.GetComponent<TextMeshProUGUI>().text = $"{this.progression * 100:0.0}%";
+		}
 	}
 
 	private static GameObject CreateUiGameObject(GameObject original, Vector2 position, Quaternion rotation)
@@ -83,5 +84,15 @@ public class UI : MonoBehaviour
 		var uiGameObject = Instantiate(original, position, rotation);
 		uiGameObject.GetComponent<SpriteRenderer>().sortingLayerName = UI.Name;
 		return uiGameObject;
+	}
+
+	private static void CreateProgressionGameObject(out GameObject toBeCreated, GameObject original, Vector2 position,
+		Quaternion rotation, Color color, int sorthingOrder)
+	{
+		toBeCreated =
+			UI.CreateUiGameObject(original, position, rotation);
+		var inactiveProgressionSpriteRenderer = toBeCreated.GetComponent<SpriteRenderer>();
+		inactiveProgressionSpriteRenderer.color = color;
+		inactiveProgressionSpriteRenderer.sortingOrder = sorthingOrder;
 	}
 }

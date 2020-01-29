@@ -8,6 +8,7 @@ TagManager:
   - Killer
   - TriggerFly
   - TriggerReverseGravity
+  - TriggerGlide
   layers:
   - Default
   - TransparentFX

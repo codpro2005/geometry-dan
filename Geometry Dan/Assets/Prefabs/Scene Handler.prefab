@@ -44,3 +44,5 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   positionX: 100
+  loadNextSceneOnPass: {fileID: 4264906358881374543, guid: 12281875be29a4a4097f7e3ae326f1e2,
+    type: 3}

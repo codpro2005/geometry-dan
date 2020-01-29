@@ -9,7 +9,7 @@ public class Follow : MonoBehaviour
 	[SerializeField] private bool differentOffsetForStates;
 	[SerializeField] [ConditionalField("differentOffsetForStates", true)] private Vector2 offset;
 	[SerializeField] [ConditionalField("differentOffsetForStates")] private float smoothSpeed;
-	[SerializeField] [ConditionalField("differentOffsetForStates")] private Vector2 runOffset;
+	[SerializeField] [ConditionalField("differentOffsetForStates")] private Vector2 jumpOffset;
 	[SerializeField] [ConditionalField("differentOffsetForStates")] private Vector2 flyOffset;
 
 	private Transform currentTransform;
@@ -57,15 +57,15 @@ public class Follow : MonoBehaviour
 			// C# 8 (and therefore switch expressions) aren't supported yet by Unity :(
 			//var destinationOffset = this.toFollowReferencePlayerController.GetState() switch
 			//{
-			//	State.Run => this.runOffset,
+			//	State.Jump => this.jumpOffset,
 			//	State.Fly => this.flyOffset,
 			//	_ => Vector2.zero
 			//};
 			Vector2 destinationOffset;
 			switch (state)
 			{
-				case State.Run:
-					destinationOffset = this.runOffset;
+				case State.Jump:
+					destinationOffset = this.jumpOffset;
 					break;
 				case State.Fly:
 					destinationOffset = this.flyOffset;
