@@ -34,9 +34,11 @@ public class PlayerController : MonoBehaviour
 
 	private Transform currentTransform;
 	private Rigidbody2D currentRigidbody2D;
+	private BoxCollider2D currentBoxCollider2D;
 	private ConstantVelocity currentConstantVelocity;
 	private GameObject progressionPercentageReference;
 	private State state;
+	private bool stateActive;
 	private GameObject jumpResetOnCollideWithReference;
 	private GameObject killOnCollideWithReference;
 	private GameObject triggerFlyOnCollideWithReference;
@@ -44,9 +46,6 @@ public class PlayerController : MonoBehaviour
 	private GameObject triggerReverseGravityOnCollideWithReference;
 	private AudioClip microphoneInput;
 	private bool microphoneExists;
-	private bool jump;
-	private bool fly;
-	private bool glide;
 	private Vector2 force;
 	private float volume;
 	private Vector2 tilt;
@@ -58,6 +57,7 @@ public class PlayerController : MonoBehaviour
 	{
 		this.currentTransform = this.GetComponent<Transform>();
 		this.currentRigidbody2D = this.GetComponent<Rigidbody2D>();
+		this.currentBoxCollider2D = this.GetComponent<BoxCollider2D>();
 		this.currentConstantVelocity = this.GetComponent<ConstantVelocity>();
 		this.progressionPercentageReference = GameObject.Find(this.progressionPercentage.transform.name);
 		this.jumpResetOnCollideWithReference = GameObject.Find(this.jumpResetOnCollideWith.name);
@@ -93,21 +93,21 @@ public class PlayerController : MonoBehaviour
 		var volumeThresholdReached = this.enableActionOnVolume && this.volume >= this.singleActionVolumeThreshold;
 		var tiltThresholdReached = this.enableActionOnTilt && this.tilt.BiggerOrEqualThan(this.singleActionTiltThreshold);
 		var anyThresholdReached = touchThresholdReached || volumeThresholdReached || tiltThresholdReached;
-		var possibleAction = touchThresholdReached || this.enableActionOnVolume || this.enableActionOnTilt;
+		var action = touchThresholdReached || this.enableActionOnVolume || this.enableActionOnTilt;
 		switch (this.state)
 		{
 			case State.Jump:
 				if (this.touchesGround && this.currentRigidbody2D.velocity.y * this.gravityStrength <= 0 && anyThresholdReached)
 				{
-					this.jump = true;
+					this.stateActive = true;
 					this.force = this.jumpForce;
 				}
 
 				break;
 			case State.Fly:
-				if (possibleAction)
+				if (action)
 				{
-					this.fly = true;
+					this.stateActive = true;
 					var totalForce = Vector2.zero;
 					if (touchThresholdReached)
 					{
@@ -128,12 +128,12 @@ public class PlayerController : MonoBehaviour
 				}
 				else
 				{
-					this.fly = false;
+					this.stateActive = false;
 				}
 
 				break;
 			case State.Glide:
-				this.glide = anyThresholdReached;
+				this.stateActive = anyThresholdReached;
 
 				break;
 			default:
@@ -144,14 +144,21 @@ public class PlayerController : MonoBehaviour
 	private void FixedUpdate()
 	{
 		void AddForce() => this.currentRigidbody2D.AddForce(new Vector2(this.force.x, this.force.y * this.gravityStrength));
-		void EnableRigidbody2D(bool enable) => this.currentRigidbody2D.isKinematic = !enable;
+		void SetStateInactive() => this.stateActive = false;
+		void DisableRigidbody2D(bool disable)
+		{
+			this.currentRigidbody2D.isKinematic = disable;
+			this.currentBoxCollider2D.isTrigger = disable;
+		}
 
-		PlayerController.ActionOnCondition(ref this.jump, AddForce, true);
-		PlayerController.ActionOnCondition(ref this.fly, AddForce);
-		PlayerController.ActionOnCondition(ref this.glide, () => EnableRigidbody2D(false), false,
+		// state = inactive in update => For all calls of fixedUpdate before the next update call, the state is set to active while otherwise it would be set directly to inactive after first execution
+		this.ActionOnStateCondition(State.Jump, AddForce, SetStateInactive);
+		this.ActionOnStateCondition(State.Fly, AddForce);
+		this.ActionOnStateCondition(State.Glide, () => DisableRigidbody2D(true),
 			() =>
 			{
-				EnableRigidbody2D(true);
+				DisableRigidbody2D(false);
+				SetStateInactive();
 				this.state = 0;
 			});
 
@@ -176,6 +183,10 @@ public class PlayerController : MonoBehaviour
 	private void OnTriggerEnter2D(Collider2D collider2D)
 	{
 		var collider2DTransformTag = collider2D.transform.tag;
+		if (this.state == State.Glide && collider2DTransformTag == this.killOnCollideWithReference.tag)
+		{
+			this.Respawn();
+		}
 		var tagIsTriggerFly = collider2DTransformTag == this.triggerFlyOnCollideWithReference.tag;
 		var tagIsGlide = collider2DTransformTag == this.triggerGlideOnCollideWithReference.tag;
 		var tagisReverseGravity = collider2DTransformTag == this.triggerReverseGravityOnCollideWithReference.tag;
@@ -208,19 +219,19 @@ public class PlayerController : MonoBehaviour
 		}
 	}
 
-	private static void ActionOnCondition(ref bool condition, Action actionOnTrue, bool reset = false, Action actionOnFalse = null)
+	private void ActionOnStateCondition(State check, Action actionOnTrue, Action actionOnInactive = null, Action actionOnFalse = null)
 	{
-		if (condition)
-		{
-			actionOnTrue();
-			if (reset)
-			{
-				condition = false;
-			}
-		} else
+		if (this.state != check)
 		{
 			actionOnFalse?.Invoke();
+			return;
 		}
+		if (this.stateActive)
+		{
+			actionOnTrue();
+			return;
+		}
+		actionOnInactive?.Invoke();
 	}
 
 	private void RespawnOnFrontalTouch()

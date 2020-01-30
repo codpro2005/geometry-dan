@@ -75,25 +75,6 @@ public class Follow : MonoBehaviour
 			//};
 
 			this.SetSettingsDependingOnStates(state, out var destinationOffset, out var destinationSizeMultiplier);
-			switch (state)
-			{
-				case State.Jump:
-					destinationOffset = this.jumpOffset;
-					destinationSizeMultiplier = this.jumpSizeMultiplier;
-					break;
-				case State.Fly:
-					destinationOffset = this.flyOffset;
-					destinationSizeMultiplier = this.flySizeMultiplier;
-					break;
-				case State.Glide:
-					destinationOffset = this.glideOffset;
-					destinationSizeMultiplier = this.glideSizeMultiplier;
-					break;
-				default:
-					destinationOffset = Vector2.zero;
-					destinationSizeMultiplier = 1;
-					break;
-			}
 
 			var timeMultiplier = currentTime - this.smoothSpeed < this.latestStateSwitchAt
 				? (currentTime - this.latestStateSwitchAt) / this.smoothSpeed
