@@ -94,7 +94,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 3fe150181ce1d3b43a62e36d5afe1b50, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 3
+  speed: 2.25
 --- !u!1 &4264906358881374543
 GameObject:
   m_ObjectHideFlags: 0
@@ -142,7 +142,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1328e625eed746f499273df034805da3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  velocity: {x: 0.2, y: 0}
+  velocity: {x: 0.1625, y: 0}
 --- !u!114 &4264906358881374540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -155,7 +155,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: dbf6d3d32c1b6af4fa3b7aa19764e33e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  jumpForce: {x: 0, y: 750}
+  jumpForce: {x: 0, y: 975}
   flyForce: {x: 0, y: 70}
   enableActionOnTouch: 1
   touchMultiplier: 1
@@ -165,6 +165,8 @@ MonoBehaviour:
   enableActionOnTilt: 1
   singleActionTiltThreshold: {x: 0, y: 0.1}
   tiltMultiplier: 2
+  sceneHandler: {fileID: 6773539324570648226, guid: 3e5a1985a7d93264b9d55d2ab7ec69fd,
+    type: 3}
   jumpResetOnCollideWith: {fileID: 8926902999765111084, guid: 0fa2d4b65a2bbff4ab089a308194a0c1,
     type: 3}
   killOnCollideWith: {fileID: 6582050050463858513, guid: e7a6e669dda7759418d63a34dc09fde1,
@@ -178,6 +180,7 @@ MonoBehaviour:
   resetVelocityOnSwitch: 1
   progressionPercentage: {fileID: 1832121939066835683, guid: b3128e275343e144e92642f0c2e886e9,
     type: 3}
+  finishLineX: 100
 --- !u!61 &4264906358881374541
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -219,7 +222,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDrag: 1
   m_AngularDrag: 0.05
-  m_GravityScale: 5
+  m_GravityScale: 6.5
   m_Material: {fileID: 0}
   m_Interpolate: 0
   m_SleepingMode: 1

@@ -43,7 +43,7 @@ public class UI : MonoBehaviour
 		this.valueToModifyReference = GameObject.Find(this.progressionBar.valueToModify.transform.name);
 		this.xDeterminedByReferenceTransform = GameObject.Find(this.progressionBar.xDeterminedBy.transform.name).transform;
 		this.startX = this.xDeterminedByReferenceTransform.position.x;
-		this.endX = GameObject.Find(this.progressionBar.endXDeterminedby.transform.name).GetComponent<SceneHandler>()
+		this.endX = GameObject.Find(this.progressionBar.endXDeterminedby.transform.name).GetComponent<PlayerController>()
 			.GetFinishLineX();
 		this.cameraStartSize = this.currentCamera.orthographicSize;
 	}

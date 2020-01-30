@@ -28,6 +28,7 @@ public class ConstantVelocity : MonoBehaviour
 
     private void FixedUpdate()
     {
+	    if (this.GetComponent<PlayerController>().isPaused()) return;
 	    this.currentRigidbody2D.position += this.velocity;
 	    //var velocityGet = this.currentRigidbody2D.velocity;
 	    //velocityGet.x = this.velocity.x;

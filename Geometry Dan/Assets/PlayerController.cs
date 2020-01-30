@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Linq;
 using MyProperties;
 using MyUnityExtensions;
@@ -31,6 +32,8 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private GameObject triggerReverseGravityOnCollideWith;
     [SerializeField] private bool resetVelocityOnSwitch;
     [SerializeField] private GameObject progressionPercentage;
+    [SerializeField] private float finishLineX;
+    [SerializeField] private float diffSceneLoadDelay;
 
     private Transform currentTransform;
     private Rigidbody2D currentRigidbody2D;
@@ -52,6 +55,7 @@ public class PlayerController : MonoBehaviour
     private bool touchesGround;
     private float gravityStrength;
     private bool inGlide;
+    private bool pause;
 
     // Awake is called before Start and should be used as the constructor
     private void Awake()
@@ -84,7 +88,13 @@ public class PlayerController : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
-        this.SetVolume();
+	    if (this.pause) return;
+	    if (this.currentTransform.position.x >= this.finishLineX)
+	    {
+            this.SpawnNext();
+	    }
+
+	    this.SetVolume();
         this.SetTilt();
 
         var touchThresholdReached = this.enableActionOnTouch && Input.touches.Any(touch =>
@@ -148,15 +158,9 @@ public class PlayerController : MonoBehaviour
 
     private void FixedUpdate()
     {
+	    if (this.pause) return;
         void AddForce() => this.currentRigidbody2D.AddForce(new Vector2(this.force.x, this.force.y * this.gravityStrength));
         void SetStateInactive() => this.stateActive = false;
-        void SetRigidbody2D(bool active)
-        {
-            this.currentRigidbody2D.isKinematic = !active;
-            this.currentBoxCollider2D.isTrigger = !active;
-            if (active) return;
-            this.currentRigidbody2D.velocity = Vector2.zero;
-        }
 
         // state = inactive in update => For all calls of fixedUpdate before the next update call, the state is set to active while otherwise it would be set directly to inactive after first execution
         this.ActionOnStateCondition(State.Jump, AddForce, SetStateInactive);
@@ -237,6 +241,14 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    private void SetRigidbody2D(bool active)
+    {
+	    this.currentRigidbody2D.isKinematic = !active;
+	    this.currentBoxCollider2D.isTrigger = !active;
+	    if (active) return;
+	    this.currentRigidbody2D.velocity = Vector2.zero;
+    }
+
     private void ActionOnStateCondition(State check, Action actionOnTrue, Action actionOnInactive = null, Action actionOnFalse = null)
     {
         if (this.state != check)
@@ -290,11 +302,35 @@ public class PlayerController : MonoBehaviour
         this.tilt = new Vector2(acceleration.x > 0 ? acceleration.x : 0, acceleration.y > 0 ? acceleration.y : 0);
     }
 
+    private void DelayLoad(Action afterDelay)
+    {
+        StartCoroutine(this.ADelayLoad(afterDelay));
+    }
+
+    private IEnumerator ADelayLoad(Action afterDelay)
+    {
+	    this.pause = true;
+        this.SetRigidbody2D(false);
+	    yield return new WaitForSeconds(this.diffSceneLoadDelay);
+	    afterDelay();
+    }
+
     private void Respawn()
     {
         Handheld.Vibrate();
-        this.progressionPercentageReference.GetComponent<TextMeshProUGUI>().enabled = true;
-        Handler.ReloadScene();
+        this.EnableProgressionPercentage();
+        this.DelayLoad(Handler.ReloadScene);
+    }
+
+    private void SpawnNext()
+    {
+	    this.EnableProgressionPercentage();
+        this.DelayLoad(Handler.LoadNextScene);
+    }
+
+    private void EnableProgressionPercentage()
+    {
+	    this.progressionPercentageReference.GetComponent<TextMeshProUGUI>().enabled = true;
     }
 
     public State GetState()
@@ -305,5 +341,15 @@ public class PlayerController : MonoBehaviour
     public bool TouchesGround()
     {
         return this.touchesGround;
+    }
+
+    public bool isPaused()
+    {
+	    return this.pause;
+    }
+
+    public float GetFinishLineX()
+    {
+	    return this.finishLineX;
     }
 }

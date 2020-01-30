@@ -126,7 +126,7 @@ MonoBehaviour:
       type: 3}
     xDeterminedBy: {fileID: 4264906358881374543, guid: 12281875be29a4a4097f7e3ae326f1e2,
       type: 3}
-    endXDeterminedby: {fileID: 6773539324570648226, guid: 3e5a1985a7d93264b9d55d2ab7ec69fd,
+    endXDeterminedby: {fileID: 4264906358881374543, guid: 12281875be29a4a4097f7e3ae326f1e2,
       type: 3}
     valueToModify: {fileID: 1832121939066835683, guid: b3128e275343e144e92642f0c2e886e9,
       type: 3}
