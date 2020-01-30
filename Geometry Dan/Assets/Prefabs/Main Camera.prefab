@@ -103,9 +103,9 @@ MonoBehaviour:
   offset: {x: 0, y: 0}
   sizeMultiplier: 1
   smoothSpeed: 0.25
-  jumpOffset: {x: 0, y: 4}
-  jumpSizeMultiplier: 1.5
-  flyOffset: {x: -4, y: 0}
+  jumpOffset: {x: -4, y: -2}
+  jumpSizeMultiplier: 1
+  flyOffset: {x: 0, y: 0}
   flySizeMultiplier: 1
   glideOffset: {x: 0, y: 0}
   glideSizeMultiplier: 1

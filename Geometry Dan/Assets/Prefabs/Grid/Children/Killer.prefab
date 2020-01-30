@@ -209,6 +209,6 @@ MonoBehaviour:
   loadGround: 0
   groundHeigth: 0
   loadSky: 1
-  skyHeigth: 15
+  skyHeigth: 20
   tile: {fileID: 11400000, guid: 6626ae0171c53b845bfdb5a7ab679797, type: 2}
   lazyLoadDistance: {x: 15, y: 10}

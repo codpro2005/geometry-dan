@@ -165,8 +165,6 @@ MonoBehaviour:
   enableActionOnTilt: 1
   singleActionTiltThreshold: {x: 0, y: 0.1}
   tiltMultiplier: 2
-  sceneHandler: {fileID: 6773539324570648226, guid: 3e5a1985a7d93264b9d55d2ab7ec69fd,
-    type: 3}
   jumpResetOnCollideWith: {fileID: 8926902999765111084, guid: 0fa2d4b65a2bbff4ab089a308194a0c1,
     type: 3}
   killOnCollideWith: {fileID: 6582050050463858513, guid: e7a6e669dda7759418d63a34dc09fde1,
@@ -181,6 +179,7 @@ MonoBehaviour:
   progressionPercentage: {fileID: 1832121939066835683, guid: b3128e275343e144e92642f0c2e886e9,
     type: 3}
   finishLineX: 100
+  diffSceneLoadDelay: 0.5
 --- !u!61 &4264906358881374541
 BoxCollider2D:
   m_ObjectHideFlags: 0

@@ -25,9 +25,6 @@ public class Handler : MonoBehaviour
 	// Update is called once per frame
 	private void Update()
 	{
-		var haha = Handler.LoadedScenes.Aggregate(string.Empty, (current, loadedScene) => current + loadedScene);
-		Debug.Log(haha);
-
 		var totalTouches = Input.touches.Length;
 		if (totalTouches == 0)
 		{

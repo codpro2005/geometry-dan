@@ -180,9 +180,10 @@ public class PlayerController : MonoBehaviour
     private void OnCollisionEnter2D(Collision2D collision2D)
     {
         var collision2DTransfromTag = collision2D.transform.tag;
+
         if (collision2DTransfromTag == this.jumpResetOnCollideWithReference.tag)
         {
-            this.touchesGround = true;
+	        this.touchesGround = true;
         }
         else
         if (collision2DTransfromTag == this.killOnCollideWithReference.tag)
@@ -270,17 +271,23 @@ public class PlayerController : MonoBehaviour
         var currentTransformLocalScale = (Vector2)this.transform.localScale;
         var currentTransformRotationZ = this.currentTransform.rotation.z;
         var localScaleOffset = -new Vector2(0.15f, 0.15f);
+        float JustOverCorner(bool xAxis) =>
+	        ((xAxis ? currentTransformLocalScale.x : currentTransformLocalScale.y) / 2 + 0.01f) * (xAxis ? this.currentConstantVelocity.GetDirection() : 1);
+        bool ValidCollider(Collider2D collider) => collider.name != this.currentTransform.name && !collider.isTrigger;
 
         var isGlitchingThrough = Physics2D
             .OverlapBoxAll(currentTransformPosition, currentTransformLocalScale + localScaleOffset,
             currentTransformRotationZ)
-            .Any(collider => collider.name != this.currentTransform.name && !collider.isTrigger);
+            .Any(ValidCollider);
         var touchesRight = Physics2D
-            .OverlapBoxAll(new Vector2(currentTransformPosition.x + (currentTransformLocalScale.x / 2 + 0.01f) * this.currentConstantVelocity.GetDirection(), currentTransformPosition.y), new Vector2(0, currentTransformLocalScale.y + localScaleOffset.y),
+            .OverlapBoxAll(new Vector2(currentTransformPosition.x + JustOverCorner(true), currentTransformPosition.y), new Vector2(0, currentTransformLocalScale.y + localScaleOffset.y),
                 currentTransformRotationZ)
-            .Any(collider =>
-                collider.name != this.currentTransform.name && !collider.isTrigger);
-        if (!isGlitchingThrough && touchesRight)
+            .Any(ValidCollider);
+        var touchesTopInAir = Physics2D
+	        .OverlapBoxAll(new Vector2(currentTransformPosition.x, currentTransformPosition.y + JustOverCorner(false) * this.gravityStrength), new Vector2(currentTransformLocalScale.x + localScaleOffset.x, 0),
+		        currentTransformRotationZ)
+	        .Any(ValidCollider);
+        if (!isGlitchingThrough && (touchesRight || touchesTopInAir && this.currentRigidbody2D.velocity.y > 0))
         {
             this.Respawn();
         }
