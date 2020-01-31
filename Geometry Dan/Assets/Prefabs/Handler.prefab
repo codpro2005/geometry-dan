@@ -43,3 +43,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d666ff4042a4a5b46b736df46d136b22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  pcDebugMouseButton: 1

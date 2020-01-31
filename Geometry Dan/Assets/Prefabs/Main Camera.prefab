@@ -102,13 +102,13 @@ MonoBehaviour:
   differentSettingsForStates: 1
   offset: {x: 0, y: 0}
   sizeMultiplier: 1
-  smoothSpeed: 2
+  smoothSpeed: 0.25
   jumpOffset: {x: -4, y: -2}
   jumpSizeMultiplier: 1
-  flyOffset: {x: 0, y: 0}
+  flyOffset: {x: -4, y: 0}
   flySizeMultiplier: 1
-  glideOffset: {x: 0, y: 0}
-  glideSizeMultiplier: 2
+  glideOffset: {x: -4, y: -2}
+  glideSizeMultiplier: 1.2
 --- !u!114 &367263554975445743
 MonoBehaviour:
   m_ObjectHideFlags: 0

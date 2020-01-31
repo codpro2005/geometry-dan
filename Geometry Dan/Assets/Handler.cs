@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -6,7 +7,8 @@ using UnityEngine.SceneManagement;
 
 public class Handler : MonoBehaviour
 {
-	public static int Reverse => -1;
+    [SerializeField] private int pcDebugMouseButton;
+    public static int Reverse => -1;
 	public static Stack<int> LoadedScenes { get; set; }
 	public static bool TouchEnabled { get; set; }
 	public static bool VolumeEnabled { get; set; }
@@ -37,14 +39,13 @@ public class Handler : MonoBehaviour
 	// Update is called once per frame
 	private void Update()
 	{
-		Debug.Log(TouchEnabled);
+        //Debug.Log(Handler.LoadedScenes.Aggregate("", (start, extendBy) => start + " " + extendBy));
 		var totalTouches = Input.touches.Length;
 		if (totalTouches == 0)
 		{
 			Handler.previousSceneLoaded = false;
 		}
-		else
-		if (totalTouches > 1 && !previousSceneLoaded)
+		if ((totalTouches > 1 && !previousSceneLoaded) || Input.GetMouseButtonDown(this.pcDebugMouseButton))
 		{
 			Handler.previousSceneLoaded = true;
 			Handler.LoadAndPopSceneInPool();
@@ -87,10 +88,16 @@ public class Handler : MonoBehaviour
 		Handler.LoadScene(SceneManager.GetActiveScene().name);
 	}
 
-	public static void LoadNextScene()
+	public static void LoadNextScene(Action onLast)
 	{
-		Handler.PushCurrentSceneInPool();
-		Handler.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+        var nextSceneBuildIndex = SceneManager.GetActiveScene().buildIndex + 1;
+        if (SceneManager.sceneCountInBuildSettings > nextSceneBuildIndex)
+        {
+            Handler.PushCurrentSceneInPool();
+            Handler.LoadScene(nextSceneBuildIndex);
+            return;
+        }
+        onLast();
 	}
 
 	public static void LoadSceneByName(string name)

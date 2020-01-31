@@ -6,6 +6,7 @@ public class GenerateTeleportExit : MonoBehaviour
 {
 	[SerializeField] private GameObject teleportExit;
 	[SerializeField] private Vector2 position;
+    [SerializeField] private bool teleportAtStart;
 
 	private GameObject teleportExitReference;
 
@@ -31,6 +32,6 @@ public class GenerateTeleportExit : MonoBehaviour
     {
 	    var collider2DTransform = collider2D.transform;
         var teleportExitReferenceTransformPosition = teleportExitReference.transform.position;
-        collider2DTransform.position = new Vector2(teleportExitReferenceTransformPosition.x - collider2DTransform.localScale.x / 2, teleportExitReferenceTransformPosition.y);
+        collider2DTransform.position = new Vector2(teleportExitReferenceTransformPosition.x - (collider2DTransform.localScale.x / 2) * (this.teleportAtStart ? 1 : -1), teleportExitReferenceTransformPosition.y);
     }
 }

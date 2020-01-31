@@ -134,7 +134,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   teleportExit: {fileID: 8241216054148750663, guid: 3c018d617d366b44d8f07710f6ebfce1,
     type: 3}
-  position: {x: 10, y: 0}
+  position: {x: 113.5, y: 6}
+  teleportAtStart: 0
 --- !u!61 &6447471255848092620
 BoxCollider2D:
   m_ObjectHideFlags: 0

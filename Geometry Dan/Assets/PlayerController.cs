@@ -15,6 +15,7 @@ public enum State
 
 public class PlayerController : MonoBehaviour
 {
+    [SerializeField] private int pcDebugMouseButton;
     [SerializeField] private Vector2 jumpForce;
     [SerializeField] private Vector2 flyForce;
     [SerializeField] private bool useSettings;
@@ -104,9 +105,9 @@ public class PlayerController : MonoBehaviour
 	    this.SetVolume();
         this.SetTilt();
 
-        var touchThresholdReached = this.enableActionOnTouch && Input.touches.Any(touch =>
+        var touchThresholdReached = this.enableActionOnTouch && (Input.touches.Any(touch =>
                              touch.phase == TouchPhase.Began || touch.phase == TouchPhase.Stationary ||
-                             touch.phase == TouchPhase.Moved);
+                             touch.phase == TouchPhase.Moved) || Input.GetMouseButtonDown(this.pcDebugMouseButton) || Input.GetMouseButton(this.pcDebugMouseButton));
         ;
         var volumeThresholdReached = this.enableActionOnVolume && this.volume >= this.singleActionVolumeThreshold;
         var tiltThresholdReached = this.enableActionOnTilt && this.tilt.BiggerOrEqualThan(this.singleActionTiltThreshold);
@@ -339,7 +340,7 @@ public class PlayerController : MonoBehaviour
     private void SpawnNext()
     {
 	    this.EnableProgressionPercentage();
-        this.DelayLoad(Handler.LoadNextScene);
+        this.DelayLoad(() => Handler.LoadNextScene(Handler.Quit));
     }
 
     private void EnableProgressionPercentage()

@@ -450,8 +450,8 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 177561645627943936, guid: a321dd36e2eed6945927e107adfaaf94,
         type: 3}
-      propertyPath: m_Enabled
-      value: 0
+      propertyPath: lazyLoadDistance.x
+      value: 25
       objectReference: {fileID: 0}
     - target: {fileID: 177561645627943951, guid: a321dd36e2eed6945927e107adfaaf94,
         type: 3}

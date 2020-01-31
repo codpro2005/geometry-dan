@@ -33,7 +33,9 @@ public class Rotate : MonoBehaviour
     private void FixedUpdate()
     {
 	    if (this.parentPlayerController.isPaused()) return;
-	    if (this.parentPlayerController.TouchesGround() || this.parentPlayerController.GetState() != State.Jump)
+        var state = this.parentPlayerController.GetState();
+
+        if (this.parentPlayerController.TouchesGround() || state != State.Jump && state != State.Glide)
 	    {
 		    this.currentTransform.rotation = Quaternion.identity;
 		    return;
