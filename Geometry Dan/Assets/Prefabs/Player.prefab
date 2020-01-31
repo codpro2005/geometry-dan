@@ -157,6 +157,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   jumpForce: {x: 0, y: 975}
   flyForce: {x: 0, y: 70}
+  useSettings: 1
   enableActionOnTouch: 1
   touchMultiplier: 1
   enableActionOnVolume: 1

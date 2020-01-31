@@ -17,14 +17,15 @@ public class PlayerController : MonoBehaviour
 {
     [SerializeField] private Vector2 jumpForce;
     [SerializeField] private Vector2 flyForce;
-    [SerializeField] private bool enableActionOnTouch;
-    [SerializeField] [ConditionalField("enableActionOnTouch")] private float touchMultiplier;
-    [SerializeField] private bool enableActionOnVolume;
-    [SerializeField] [ConditionalField("enableActionOnVolume")] private float singleActionVolumeThreshold;
-    [SerializeField] [ConditionalField("enableActionOnVolume")] private float volumeMultiplier;
-    [SerializeField] private bool enableActionOnTilt;
-    [SerializeField] [ConditionalField("enableActionOnTilt")] private Vector2 singleActionTiltThreshold;
-    [SerializeField] [ConditionalField("enableActionOnTilt")] private float tiltMultiplier;
+    [SerializeField] private bool useSettings;
+    [SerializeField] [ConditionalField("useSettings", true)] private bool enableActionOnTouch;
+    [SerializeField] private float touchMultiplier; // condition should be => !useSettings && !enableActionOnTouch => dont show
+    [SerializeField] [ConditionalField("useSettings", true)] private bool enableActionOnVolume;
+    [SerializeField] private float singleActionVolumeThreshold; // condition should be => !useSettings && !enableActionOnVolume => dont show
+    [SerializeField] private float volumeMultiplier; // condition should be => !useSettings && !enableActionOnVolume => dont show
+    [SerializeField] [ConditionalField("useSettings", true)] private bool enableActionOnTilt;
+    [SerializeField] private Vector2 singleActionTiltThreshold; // condition should be => !useSettings && !enableActionOnTilt => dont show
+    [SerializeField] private float tiltMultiplier; // condition should be => !useSettings && !enableActionOnTilt => dont show
     [SerializeField] private GameObject jumpResetOnCollideWith;
     [SerializeField] private GameObject killOnCollideWith;
     [SerializeField] private GameObject triggerFlyOnCollideWith;
@@ -60,6 +61,12 @@ public class PlayerController : MonoBehaviour
     // Awake is called before Start and should be used as the constructor
     private void Awake()
     {
+	    if (useSettings)
+	    {
+		    this.enableActionOnTouch = Handler.TouchEnabled;
+		    this.enableActionOnVolume = Handler.VolumeEnabled;
+		    this.enableActionOnTilt = Handler.TiltEnabled;
+	    }
         this.currentTransform = this.GetComponent<Transform>();
         this.currentRigidbody2D = this.GetComponent<Rigidbody2D>();
         this.currentBoxCollider2D = this.GetComponent<BoxCollider2D>();

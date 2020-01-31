@@ -8,12 +8,24 @@ public class Handler : MonoBehaviour
 {
 	public static int Reverse => -1;
 	public static Stack<int> LoadedScenes { get; set; }
-	private static bool previousSceneLoaded;
+	public static bool TouchEnabled { get; set; }
+	public static bool VolumeEnabled { get; set; }
+	public static bool TiltEnabled { get; set; }
+	private static bool previousSceneLoaded { get; set; }
+
+	static Handler()
+	{
+		Handler.LoadedScenes = new Stack<int>();
+		Handler.TouchEnabled = true;
+		Handler.VolumeEnabled = false;
+		Handler.TiltEnabled = false;
+		Handler.previousSceneLoaded = false;
+	}
 
 	// Awake is called before Start and should be used as the constructor
 	private void Awake()
 	{
-		Handler.LoadedScenes = new Stack<int>();
+
 	}
 
 	// Start is called before the first frame update
@@ -25,6 +37,7 @@ public class Handler : MonoBehaviour
 	// Update is called once per frame
 	private void Update()
 	{
+		Debug.Log(TouchEnabled);
 		var totalTouches = Input.touches.Length;
 		if (totalTouches == 0)
 		{
