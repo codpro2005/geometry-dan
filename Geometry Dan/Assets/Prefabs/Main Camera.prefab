@@ -97,18 +97,18 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 6cf0c8c0b3d8a8a44882805867946711, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  toFollow: {fileID: 4264906358881374543, guid: 12281875be29a4a4097f7e3ae326f1e2,
+  toFollow: {fileID: 3829719531234517910, guid: 12281875be29a4a4097f7e3ae326f1e2,
     type: 3}
   differentSettingsForStates: 1
   offset: {x: 0, y: 0}
   sizeMultiplier: 1
-  smoothSpeed: 0.25
+  smoothSpeed: 2
   jumpOffset: {x: -4, y: -2}
   jumpSizeMultiplier: 1
   flyOffset: {x: 0, y: 0}
   flySizeMultiplier: 1
   glideOffset: {x: 0, y: 0}
-  glideSizeMultiplier: 1
+  glideSizeMultiplier: 2
 --- !u!114 &367263554975445743
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -124,9 +124,9 @@ MonoBehaviour:
   progressionBar:
     gameObject: {fileID: 3019291764068394248, guid: 43b51680a3ed8dd4b93fa93bf2f35bcb,
       type: 3}
-    xDeterminedBy: {fileID: 4264906358881374543, guid: 12281875be29a4a4097f7e3ae326f1e2,
+    xDeterminedBy: {fileID: 3829719531234517910, guid: 12281875be29a4a4097f7e3ae326f1e2,
       type: 3}
-    endXDeterminedby: {fileID: 4264906358881374543, guid: 12281875be29a4a4097f7e3ae326f1e2,
+    endXDeterminedby: {fileID: 3829719531234517910, guid: 12281875be29a4a4097f7e3ae326f1e2,
       type: 3}
     valueToModify: {fileID: 1832121939066835683, guid: b3128e275343e144e92642f0c2e886e9,
       type: 3}

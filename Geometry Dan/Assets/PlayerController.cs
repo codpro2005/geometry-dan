@@ -279,7 +279,7 @@ public class PlayerController : MonoBehaviour
         var currentTransformRotationZ = this.currentTransform.rotation.z;
         var localScaleOffset = -new Vector2(0.15f, 0.15f);
         float JustOverCorner(bool xAxis) =>
-	        ((xAxis ? currentTransformLocalScale.x : currentTransformLocalScale.y) / 2 + 0.01f) * (xAxis ? this.currentConstantVelocity.GetDirection() : 1);
+	        ((xAxis ? currentTransformLocalScale.x : currentTransformLocalScale.y) / 2 + 0.01f) * (xAxis ? this.currentConstantVelocity.GetDirection() : this.gravityStrength);
         bool ValidCollider(Collider2D collider) => collider.name != this.currentTransform.name && !collider.isTrigger;
 
         var isGlitchingThrough = Physics2D
@@ -291,7 +291,7 @@ public class PlayerController : MonoBehaviour
                 currentTransformRotationZ)
             .Any(ValidCollider);
         var touchesTopInAir = Physics2D
-	        .OverlapBoxAll(new Vector2(currentTransformPosition.x, currentTransformPosition.y + JustOverCorner(false) * this.gravityStrength), new Vector2(currentTransformLocalScale.x + localScaleOffset.x, 0),
+	        .OverlapBoxAll(new Vector2(currentTransformPosition.x, currentTransformPosition.y + JustOverCorner(false)), new Vector2(currentTransformLocalScale.x + localScaleOffset.x, 0),
 		        currentTransformRotationZ)
 	        .Any(ValidCollider);
         if (!isGlitchingThrough && (touchesRight || touchesTopInAir && this.currentRigidbody2D.velocity.y > 0))

@@ -27,12 +27,17 @@ public class Rotate : MonoBehaviour
     // Update is called once per frame
     private void Update()
     {
+
+    }
+
+    private void FixedUpdate()
+    {
 	    if (this.parentPlayerController.isPaused()) return;
 	    if (this.parentPlayerController.TouchesGround() || this.parentPlayerController.GetState() != State.Jump)
 	    {
 		    this.currentTransform.rotation = Quaternion.identity;
 		    return;
-		}
+	    }
 	    this.currentTransform.Rotate(Vector3.back * this.speed * this.parent.GetComponent<ConstantVelocity>().GetDirection());
     }
 }
