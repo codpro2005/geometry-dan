@@ -7,7 +7,6 @@ using UnityEngine.SceneManagement;
 
 public class Handler : MonoBehaviour
 {
-    [SerializeField] private int pcDebugMouseButton;
     public static int Reverse => -1;
 	public static Stack<int> LoadedScenes { get; set; }
 	public static bool TouchEnabled { get; set; }
@@ -44,8 +43,8 @@ public class Handler : MonoBehaviour
 		if (totalTouches == 0)
 		{
 			Handler.previousSceneLoaded = false;
-		}
-		if ((totalTouches > 1 && !previousSceneLoaded) || Input.GetMouseButtonDown(this.pcDebugMouseButton))
+		} else
+		if (totalTouches > 1 && !previousSceneLoaded)
 		{
 			Handler.previousSceneLoaded = true;
 			Handler.LoadAndPopSceneInPool();
